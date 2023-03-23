@@ -1,9 +1,17 @@
+import { useFetch} from "../../hooks/useFetch.jsx";
+
+import RecipeList from "../../components/RecipeList/RecipeList.jsx";
+
 import './Home.css';
 
 export default function Home() {
+    const  { data: recipes, isPending, error } = useFetch('http://localhost:3000/recipes');
+
     return (
-        <div>
-            <h1>Home</h1>
+        <div className="home">
+            { error && <p className="error">{ error }</p> }
+            { isPending && <p className="loading">Loading...</p> }
+            { recipes && <RecipeList recipes={recipes} /> }
         </div>
     );
 }
