@@ -1,6 +1,7 @@
-import {BrowserRouter as Router, Routes, Route, NavLink, Navigate} from "react-router-dom";
+import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
 import { useState } from 'react';
 
+import Navbar from "./components/Navbar/Navbar.jsx";
 import Home from './pages/home/Home.jsx';
 import Create from './pages/create/Create.jsx';
 import Search from './pages/search/Search.jsx';
@@ -14,12 +15,7 @@ function App() {
   return (
       <div className="App">
         <Router>
-          <nav>
-            <h1>My articles</h1>
-            <NavLink to="/">Home</NavLink>
-            <NavLink to="/about">About</NavLink>
-            <NavLink to="/contact">Contact</NavLink>
-          </nav>
+          <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
