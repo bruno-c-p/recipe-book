@@ -2,6 +2,10 @@ import { Link } from 'react-router-dom'
 
 import {useTheme} from "../../hooks/useTheme.jsx";
 
+import { doc, deleteDoc } from "firebase/firestore";
+import { database } from "../../firebase/config.js";
+
+import Trashcan from '../../assets/trashcan.svg';
 import './RecipeList.css'
 
 export default function RecipeList({ recipes }) {
@@ -11,6 +15,14 @@ export default function RecipeList({ recipes }) {
         <div className="error">No recipes to load...</div>
     )
 
+    const handleClick = async (id) => {
+        try {
+            await deleteDoc(doc(database, "recipes", id));
+        } catch (error) {
+            console.error("Error removing document: ", error);
+        }
+    }
+
     return (
         <div className="recipe-list">
             {recipes?.map(recipe => (
@@ -19,6 +31,12 @@ export default function RecipeList({ recipes }) {
                     <p>{recipe.cookingTime} to make.</p>
                     <div>{recipe.method.substring(0, 100)}...</div>
                     <Link to={`/recipes/${recipe.id}`}>Cook this</Link>
+                    <img
+                        className="delete"
+                        src={Trashcan}
+                        alt="Delete recipe"
+                        onClick={() => handleClick(recipe.id)}
+                    />
                 </div>
             ))}
         </div>
