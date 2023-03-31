@@ -1,6 +1,8 @@
 import {BrowserRouter as Router, Routes, Route, Navigate} from "react-router-dom";
-import { useState } from 'react';
 
+import {useTheme} from "./hooks/useTheme.jsx";
+
+import ThemeSelector from "./components/ThemeSelector/ThemeSelector.jsx";
 import Navbar from "./components/Navbar/Navbar.jsx";
 import Home from './pages/home/Home.jsx';
 import Create from './pages/create/Create.jsx';
@@ -10,12 +12,13 @@ import Recipe from './pages/recipe/Recipe.jsx';
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0);
+  const { mode } = useTheme();
 
   return (
-      <div className="App">
+      <div className={`App ${mode}`}>
         <Router>
           <Navbar />
+          <ThemeSelector />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/create" element={<Create />} />
