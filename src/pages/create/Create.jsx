@@ -1,7 +1,8 @@
-import {useEffect, useRef, useState} from "react";
+import { useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { useFetch } from "../../hooks/useFetch";
+import { addDoc, collection } from "firebase/firestore";
+import { database } from "../../firebase/config.js";
 
 import './Create.css';
 
@@ -14,11 +15,19 @@ export default function Create() {
     const ingredientInput = useRef(null);
     const navigate = useNavigate();
 
-    const { postData, data, error } = useFetch('http://localhost:3000/recipes', 'POST');
-
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        postData({ title, method, cookingTime: cookingTime + ' minutes', ingredients });
+        try {
+            await addDoc(collection(database, "recipes"), {
+                title,
+                method,
+                cookingTime: cookingTime + ' minutes',
+                ingredients
+            });
+            navigate('/');
+        } catch (error) {
+            console.error("Error adding document: ", error);
+        }
     }
 
     const handleAddIngredient = (e) => {
@@ -30,10 +39,6 @@ export default function Create() {
         setNewIngredient('');
         ingredientInput.current.focus();
     }
-
-    useEffect(() => {
-        if (data) navigate('/');
-    }, [data, navigate])
 
     return (
         <div className="create">
