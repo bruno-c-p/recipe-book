@@ -1,28 +1,49 @@
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 
-import {useFetch} from "../../hooks/useFetch.jsx";
 import {useTheme} from "../../hooks/useTheme.jsx";
+
+import { doc, getDoc } from "firebase/firestore";
+import { database } from "../../firebase/config.js";
 
 import './Recipe.css';
 
 export default function Recipe() {
     const { mode } = useTheme();
     const { id } = useParams();
-    const url = 'http://localhost:3000/recipes/' + id;
-    const  { data: recipe, isPending, error } = useFetch(url);
+    const [data, setData] = useState(null);
+    const [isPending, setIsPending] = useState(false);
+    const [error, setError] = useState(null);
+
+    useEffect(() => {
+        setIsPending(true);
+        const recipeRef = doc(database, "recipes", id);
+        getDoc(recipeRef).then((doc) => {
+            if (doc.exists()) {
+                setData(doc.data());
+                setIsPending(false);
+            } else {
+                setError("Could not find that recipe!");
+                setIsPending(false);
+            }
+        }).catch((error) => {
+            setError(error.message);
+            setIsPending(false);
+        });
+    }, [id]);
 
     return (
         <div className={`recipe ${mode}`}>
             { error && <p className="error">{ error }</p> }
             { isPending && <p className="loading">Loading...</p> }
-            { recipe && (
+            { data && (
                 <>
-                    <h2 className="page-title">{recipe.title}</h2>
-                    <p>Takes {recipe.cookingTime} to cook.</p>
+                    <h2 className="page-title">{data.title}</h2>
+                    <p>Takes {data.cookingTime} to cook.</p>
                     <ul>
-                        {recipe.ingredients.map(ingredient => <li key={ingredient}>{ingredient}</li>)}
+                        {data.ingredients.map(ingredient => <li key={ingredient}>{ingredient}</li>)}
                     </ul>
-                    <p className="method">{recipe.method}</p>
+                    <p className="method">{data.method}</p>
                 </>
             )}
         </div>
